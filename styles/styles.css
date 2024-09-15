@@ -1,0 +1,116 @@
+*,
+*:before,
+*:after {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: white;
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+}
+
+nav {
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  width: 100vw;
+  padding: 0 25px;
+  z-index: 1000;
+}
+
+.nav-btn {
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  text-decoration: none;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+.main-section {
+  height: 100vh;
+  width: 100vw;
+}
+
+#landing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#landing-header {
+  opacity: 0;
+}
+
+#explore-el {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(100%); /* Start off screen */
+  gap: 6px;
+}
+
+#explore-el button {
+  font-size: 20px;
+  color: white;
+  font-weight: 400;
+  margin: 0;
+  padding: 12.5px 20px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.call-to-action-btn {
+  background-color: none;
+  border: none;
+  padding: 8px 30px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+#explore-el .line {
+  width: 2px;
+  height: 175px;
+  background-color: rgba(255, 255, 255, 0.25); /* Gradient from white to transparent */
+  transform-origin: top; /* Scale from the top */
+  z-index: 1000;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  background-color: white;
+  height: 400px;
+}
+
+@media (max-width: 600px) {
+  nav {
+    display: none;
+  }
+}/*# sourceMappingURL=styles.css.map */
