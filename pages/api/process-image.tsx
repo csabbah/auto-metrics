@@ -10,6 +10,7 @@ export const config = {
   },
 };
 
+// API Keys can be found here https://aistudio.google.com/app/apikey
 const AI_KEY: any = process.env.AI_KEY;
 const genAI = new GoogleGenerativeAI(AI_KEY);
 

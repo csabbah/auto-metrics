@@ -1,4 +1,11 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import {
+  useState,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+} from "react";
+import { useDropzone } from "react-dropzone";
 
 interface StructuredData {
   [key: string]: any;
@@ -6,21 +13,36 @@ interface StructuredData {
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Handle file selection
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [imageURLs, setImageURLs] = useState<string[]>([]);
   const [structuredData, setStructuredData] = useState<StructuredData[]>([]);
 
+  // Handle file selection
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const files = Array.from(event.target.files);
-      setSelectedFiles(files);
+      setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
 
-      const urls = files.map((file) => URL.createObjectURL(file as any));
-      setImageURLs(urls);
+      const urls = files.map((file) => URL.createObjectURL(file));
+      setImageURLs((prevURLs) => [...prevURLs, ...urls]);
     }
   };
+
+  // Handle drag-and-drop file selection
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setSelectedFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+
+    const urls = acceptedFiles.map((file) => URL.createObjectURL(file));
+    setImageURLs((prevURLs) => [...prevURLs, ...urls]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [],
+    },
+    multiple: true,
+  });
 
   // Handle form submission
   const handleSubmit = async (event: FormEvent) => {
@@ -32,7 +54,7 @@ export default function Home() {
     setLoading(true);
 
     const formData = new FormData();
-    selectedFiles.forEach((file: any) => {
+    selectedFiles.forEach((file) => {
       formData.append("file", file);
     });
 
@@ -72,7 +94,7 @@ export default function Home() {
 
   useEffect(() => {
     return () => {
-      imageURLs.forEach((url: string) => URL.revokeObjectURL(url));
+      imageURLs.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [imageURLs]);
 
@@ -89,39 +111,92 @@ export default function Home() {
       }}
     >
       <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileChange}
-        />
+        <div
+          {...getRootProps()}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "2px dashed #888",
+            padding: "20px",
+            width: "500px",
+            height: "200px",
+            textAlign: "center",
+            marginBottom: "20px",
+            cursor: "pointer",
+            backgroundColor: isDragActive ? "#f0f8ff" : "#f9f9f9",
+            borderRadius: 5,
+          }}
+        >
+          <input
+            {...getInputProps()}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileChange}
+          />
+          {isDragActive ? (
+            <p
+              style={{
+                width: "70%",
+                margin: 0,
+              }}
+            >
+              Drop the files here...
+            </p>
+          ) : (
+            <p
+              style={{
+                width: "70%",
+                margin: 0,
+              }}
+            >
+              Drag & drop some files here, or click to select files
+            </p>
+          )}
+        </div>
         <button type="submit">Process Images</button>
       </form>
+
       {imageURLs.length > 0 && (
         <div
           style={{
             display: "flex",
             flexWrap: "wrap",
-
             justifyContent: "center",
             alignItems: "center",
             gap: 25,
           }}
         >
-          {imageURLs.map((url: string, index: number) => (
+          {imageURLs.map((url, index) => (
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
+                position: "relative",
               }}
               key={index}
             >
+              <button
+                onClick={() => {
+                  let currentFiles = [...selectedFiles];
+                  let currentUrls = [...imageURLs];
+
+                  currentUrls.splice(index, 1);
+                  currentFiles.splice(index, 1);
+
+                  setSelectedFiles(currentFiles);
+                  setImageURLs(currentUrls);
+                }}
+                style={{ position: "absolute", left: 10, top: 10 }}
+              >
+                Delete
+              </button>
               <img
                 src={url}
                 alt={`Selected ${index}`}
                 style={{ maxWidth: "200px" }}
               />
-              {/* Display extracted data if available */}
               {structuredData.length > index &&
                 renderData(structuredData[index])}
             </div>
